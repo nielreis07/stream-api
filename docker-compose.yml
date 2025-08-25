@@ -1,0 +1,44 @@
+services:
+  strem-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: strem-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - postgres
+    networks:
+      - external_network
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: strem
+      DB_USERNAME: strem
+      DB_PASSWORD: root
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: strem
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: strem
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - external_network
+
+volumes:
+  postgres-data:
+
+
+networks:
+  external_network:
+    driver: bridge
